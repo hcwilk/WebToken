@@ -14,12 +14,23 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const Greeter = await hre.ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
+  const Tide = await hre.ethers.getContractFactory("Tide");
+  const tide = await Tide.deploy();
 
-  await greeter.deployed();
+  await tide.deployed();
 
-  console.log("Greeter deployed to:", greeter.address);
+  console.log("Tide deployed to:", tide.address);
+
+
+  const Math = await hre.ethers.getContractFactory("SomeMath");
+  const math = await Math.deploy(tide.address);
+
+  await math.deployed();
+
+  console.log("Math deployed to:", math.address);
+
+
+
 }
 
 // We recommend this pattern to be able to use async/await everywhere
@@ -30,3 +41,5 @@ main()
     console.error(error);
     process.exit(1);
   });
+
+  //npx hardhat run --network PulseChain scripts/deploy.js 
