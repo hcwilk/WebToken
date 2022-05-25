@@ -29,7 +29,9 @@ module.exports = {
       accounts: [privateKey]
     },
 	kovan:{
-		url:'https://kovan.infura.io/v3/d06042096f7a48b9949608c385bc8ba7'
+		url:'https://kovan.infura.io/v3/d06042096f7a48b9949608c385bc8ba7',
+		accounts: [privateKey]
+
 	}
   },
   solidity: "0.8.4",
