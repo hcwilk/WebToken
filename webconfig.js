@@ -1,0 +1,1 @@
+export const web_address = '0x395CeD1F83C6A9A1f05Ae48f0ae3b155D1C42235'
