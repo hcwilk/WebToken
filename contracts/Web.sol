@@ -12,6 +12,8 @@ contract Web is ERC20, ReentrancyGuard{
 
 	mapping(address => bool) is_host;
 
+
+
 	
 
 	constructor(uint supply) ReentrancyGuard() ERC20("WebToken", "WEB") {

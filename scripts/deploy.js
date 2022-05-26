@@ -14,12 +14,20 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const Web = await hre.ethers.getContractFactory("Web");
-  const web = await Web.deploy(100);
+//   const Web = await hre.ethers.getContractFactory("Web");
+//   const web = await Web.deploy(100);
 
-  await web.deployed();
+//   await web.deployed();
 
-  console.log("Web deployed to:", web.address);
+//   console.log("Web deployed to:", web.address);
+
+
+  const Oracle = await hre.ethers.getContractFactory("Oracle");
+  const oracle = await Oracle.deploy();
+
+  await oracle.deployed();
+
+  console.log("Oracle deployed to:", oracle.address);
 
 
   
@@ -38,3 +46,4 @@ main()
   });
 
   //npx hardhat run --network PulseChain scripts/deploy.js 
+  //npx hardhat run --network localhost scripts/deploy.js

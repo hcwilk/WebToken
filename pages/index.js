@@ -5,7 +5,9 @@ import React, {useEffect, useState} from 'react'
 import Web3Modal from 'web3modal'
 import {web_address} from '../webconfig';
 import Web from '../artifacts/contracts/Web.sol/Web.json' 
+import Oracle from '../artifacts/contracts/Oracle.sol/Oracle.json'
 import {Contract, ethers} from 'ethers';
+import { oracle_address } from '../../oracle_config'
 
 
 
@@ -34,7 +36,7 @@ export default function Home() {
 		const connection = await web3Modal.connect()
 		const provider = new ethers.providers.Web3Provider(connection);
 		const signer = provider.getSigner();
-		const WebContract = new ethers.Contract(web_address, Web.abi, signer);
+		const WebContract = new ethers.Contract(web_address, Web.abi, signer );
 
 		let conversionn = await WebContract.get_conversion();
 		console.log(conversionn)
@@ -48,6 +50,7 @@ export default function Home() {
 	
 
 		setLoadingState("loaded")
+
 
 	}
 
@@ -127,6 +130,41 @@ export default function Home() {
 	  }
 
 
+	const checkEvents = async() => {
+
+		const web3Modal = new Web3Modal()
+		const connection = await web3Modal.connect()
+		const provider = new ethers.providers.Web3Provider(connection);
+		const signer = provider.getSigner();
+
+		const OracleContract = new ethers.Contract(oracle_address, Oracle.abi, signer);
+
+		console.log(OracleContract)
+
+		OracleContract.on("DataRequested",(from,number) => {
+			console.log("Got the event!");
+			console.log(from,number.toString())
+		})
+	}
+
+	async function requestdata(){
+		const web3Modal = new Web3Modal()
+		const connection = await web3Modal.connect()
+		const provider = new ethers.providers.Web3Provider(connection);
+		const signer = provider.getSigner();
+
+		const OracleContract = new ethers.Contract(oracle_address, Oracle.abi, signer);
+
+		let tx = await OracleContract.requestData(32)
+
+		await tx.wait()
+
+		checkEvents()
+
+
+	}
+
+
   return (
 	<> 
   		<div key={id} className="h-screen flex justify-center bg-gradient-to-r from-cyan-500 to-blue-500">
@@ -185,7 +223,8 @@ export default function Home() {
 
 
 							<div className='flex justify-center'>
-								
+								<button className='bg-blue-300 rounded-full px-5 text-2xl hover:bg-blue-400 mt-5' onClick={requestdata}>Request Data</button>
+
 							</div>
 
 							<div className='flex justify-center'>
