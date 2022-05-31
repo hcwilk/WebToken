@@ -18,6 +18,7 @@ export default function Home() {
 	const [loadingState, setLoadingState] = useState('not-loaded');
 	const [gigs_C, setGigs_C] = useState(0);
 	const [gigs_D, setGigs_D] = useState(0);
+	const [web, setWeb] = useState(0);
 	const [id, setId] = useState("213");
 	const [id2, setId2] = useState("21212123");
   
@@ -37,16 +38,29 @@ export default function Home() {
 		const provider = new ethers.providers.Web3Provider(connection);
 		const signer = provider.getSigner();
 		const WebContract = new ethers.Contract(web_address, Web.abi, signer );
+		const OracleContract = new ethers.Contract(oracle_address, Oracle.abi, signer );
 
-		let conversionn = await WebContract.get_conversion();
+
+		// const some_data = await OracleContract.requestData(12)
+
+		// console.log(some_data)
+
+		console.log(WebContract)
+
+		const conversionn = await WebContract.get_conversion();
 		console.log(conversionn)
-		conversionn = parseInt(conversionn._hex)
+		const conversionnn = parseInt(conversionn._hex)
 
-		setConversion(conversionn/10**9)
+		setConversion(conversionnn/10**9)
 
 		const balance = await WebContract.get_bal();
 		const balancee = parseInt(balance._hex)
 		setUserWeb(balancee/1000000000)
+
+
+		const contr = await WebContract.balanceOf(web_address)
+
+		console.log(parseInt(contr._hex))
 	
 
 		setLoadingState("loaded")
@@ -85,7 +99,7 @@ export default function Home() {
 		const WebContract = new ethers.Contract(web_address, Web.abi, signer);
 		console.log(gigs_C)
 
-		const transaction = await WebContract.pay_host(gigs_C*1000000000,gigs_D*1000000000)
+		const transaction = await WebContract.pay_host(gigs_C*1000000000,gigs_D*1000000000, '0xD6bf7fD245FC2Cc848264eA8bEAD5558299f2601')
 
 		await transaction.wait()
 
@@ -164,6 +178,23 @@ export default function Home() {
 
 	}
 
+	async function buyWeb(){
+		const web3Modal = new Web3Modal()
+		const connection = await web3Modal.connect()
+		const provider = new ethers.providers.Web3Provider(connection);
+		const signer = provider.getSigner();
+
+		const WebContract = new ethers.Contract(web_address, Web.abi, signer);
+
+		let tx = await WebContract.buy_web({value:web})
+
+		await tx.wait()
+
+		init()
+
+
+	}
+
 
   return (
 	<> 
@@ -178,6 +209,11 @@ export default function Home() {
 							</div>
 							<div className='flex justify-center'>
 								<button className='bg-pink-200 rounded-full py-3 text-xl px-5 ml-10 hover:bg-pink-300' onClick={addd}>Add Web To Metamask!</button>
+							</div>
+
+							<div className='flex justify-center'>
+								<input className='w-20 rounded-full text-center'   onChange={(e) => setWeb(e.target.value)}></input>
+								<button className='bg-blue-300 rounded-full px-5 text-2xl hover:bg-blue-400' onClick={buyWeb} >Buy WEB</button>
 							</div>
 
 							<div className='flex justify-center'>
