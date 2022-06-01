@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "./OracleInterface.sol";
 
 
 
@@ -10,16 +11,19 @@ contract Web is ERC20, ReentrancyGuard{
 	address manager;
 	uint public conversion;
 
+	OracleInterface public oracle_contract;
+
 	mapping(address => bool) is_host;
 
 
 
 	
 
-	constructor(uint supply) ReentrancyGuard() ERC20("WebToken", "WEB") {
+	constructor(uint supply, address _oracle) ReentrancyGuard() ERC20("WebToken", "WEB") {
 		manager = msg.sender;
 		_mint(address(this),supply * 10**9);
 		conversion = 2000000000;
+		oracle_contract = OracleInterface(_oracle);
 	}
 
 	modifier manager_function(){
@@ -40,7 +44,7 @@ contract Web is ERC20, ReentrancyGuard{
 
 	function buy_web() public payable{
 		require(msg.value>0,'you must send money in order to receive WEB');
-		_transfer(address(this),msg.sender,msg.value*conversion);
+		_transfer(address(this),msg.sender,msg.value*get_conversion()/2);
 	}
 
 	function add_host(address _host) external manager_function{
@@ -48,12 +52,12 @@ contract Web is ERC20, ReentrancyGuard{
 	}
 
 	function set_conversion (uint _conversion) public{
-		conversion = _conversion;
+		oracle_contract.changeData(_conversion);
 	}
 
 	function get_conversion() public view returns(uint){
 		// This is going to be a Chainlink call in production
-		return conversion;
+		return oracle_contract.requestData();
 	}
 
 	// Needs to be pulled from a Chainlink Oracle

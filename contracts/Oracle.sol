@@ -1,13 +1,15 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
+
+
 contract Oracle{
 	
-	uint global;
+	uint public global;
 
 
 	constructor(){
-		global = 10;
+		global = 2000000000;
 	}
 
 	event DataRequested(
@@ -16,11 +18,12 @@ contract Oracle{
 	);
 
 
-	function requestData(uint _number) public {
+	function requestData() public view returns(uint){
+		return global;
+	}
+
+	function changeData(uint _number) public{
 		global = _number;
-
-
-		emit DataRequested(msg.sender, _number);
 	}
 
 

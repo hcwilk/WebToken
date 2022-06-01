@@ -14,13 +14,6 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const Web = await hre.ethers.getContractFactory("Web");
-  const web = await Web.deploy(100);
-
-  await web.deployed();
-
-  console.log("Web deployed to:", web.address);
-
 
   const Oracle = await hre.ethers.getContractFactory("Oracle");
   const oracle = await Oracle.deploy();
@@ -28,6 +21,16 @@ async function main() {
   await oracle.deployed();
 
   console.log("Oracle deployed to:", oracle.address);
+
+  const Web = await hre.ethers.getContractFactory("Web");
+  const web = await Web.deploy(100, oracle.address);
+
+  await web.deployed();
+
+  console.log("Web deployed to:", web.address);
+
+
+
 
 
   

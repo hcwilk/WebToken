@@ -11,6 +11,7 @@ import { oracle_address } from '../../oracle_config'
 
 
 
+
 export default function Home() {
 	const [userWeb, setUserWeb] = useState(0);
 	const [conversion, setConversion] = useState(0);
@@ -32,13 +33,17 @@ export default function Home() {
 	  }, []);
 
 
+
+
+
 	async function init(){
 		const web3Modal = new Web3Modal()
 		const connection = await web3Modal.connect()
 		const provider = new ethers.providers.Web3Provider(connection);
 		const signer = provider.getSigner();
 		const WebContract = new ethers.Contract(web_address, Web.abi, signer );
-		const OracleContract = new ethers.Contract(oracle_address, Oracle.abi, signer );
+
+
 
 
 		// const some_data = await OracleContract.requestData(12)
@@ -178,7 +183,7 @@ export default function Home() {
 
 	}
 
-	async function buyWeb(){
+	async function buyWeb(_amount){
 		const web3Modal = new Web3Modal()
 		const connection = await web3Modal.connect()
 		const provider = new ethers.providers.Web3Provider(connection);
@@ -186,7 +191,7 @@ export default function Home() {
 
 		const WebContract = new ethers.Contract(web_address, Web.abi, signer);
 
-		let tx = await WebContract.buy_web({value:web})
+		let tx = await WebContract.buy_web({value:_amount})
 
 		await tx.wait()
 
@@ -194,6 +199,9 @@ export default function Home() {
 
 
 	}
+
+
+
 
 
   return (
@@ -205,6 +213,12 @@ export default function Home() {
 				<div className="w-3/5 flex flex-col pt-12 gap-10 ">
 						<div className="mx-auto flex w-fit flex-col gap-5 justify-center bg-gradient-to-l from-cyan-200 to-blue-200 rounded-2xl shadow-xl shadow-black">
 							<div className='flex justify-center'>
+								<h1 className=' text-4xl text-center'>   $.50 / Gig</h1>
+							</div>
+							<div className='flex justify-center'>
+								<h1 className=' text-4xl text-center'>      WebTokens / Gig  =  {conversion/2}</h1>
+							</div>
+							<div className='flex justify-center'>
 								<h1 className=' text-4xl text-center'>      WebTokens / Dollar =  {conversion}</h1>
 							</div>
 							<div className='flex justify-center'>
@@ -212,8 +226,13 @@ export default function Home() {
 							</div>
 
 							<div className='flex justify-center'>
-								<input className='w-20 rounded-full text-center'   onChange={(e) => setWeb(e.target.value)}></input>
-								<button className='bg-blue-300 rounded-full px-5 text-2xl hover:bg-blue-400' onClick={buyWeb} >Buy WEB</button>
+								<h1 className='text-3xl'>Choose Monthly Plan!</h1>	
+							</div>
+
+							<div className='flex justify-center'>
+								<button className='bg-blue-300 rounded-full px-5 text-2xl hover:bg-blue-400' onClick={() => {buyWeb(10)}} >10 Gigs/month</button>
+								<button className='bg-blue-300 rounded-full px-5 text-2xl hover:bg-blue-400' onClick={() => {buyWeb(20)}} >20 Gigs/month</button>
+								<button className='bg-blue-300 rounded-full px-5 text-2xl hover:bg-blue-400' onClick={() => {buyWeb(50)}} >50 Gigs/month</button>
 							</div>
 
 							<div className='flex justify-center'>
@@ -234,7 +253,7 @@ export default function Home() {
 							
 						</div>
 
-						<div className=" flex flex-col justify-between bg-gradient-to-l from-cyan-200 to-blue-200 rounded-2xl shadow-xl shadow-black">
+						<div className=" flex flex-col justify-between  bg-gradient-to-l from-cyan-200 to-blue-200 rounded-2xl shadow-xl shadow-black">
 							<div className='flex justify-center'>
 								<input className='w-20 h-10 rounded-full mt-5 text-center' onChange={(e) => setGigs_C(e.target.value)}></input>
 								<h1 className=' text-4xl mt-5 text-center'>  Gigs reported from Core</h1>
@@ -245,23 +264,13 @@ export default function Home() {
 								<h1 className=' text-4xl text-center '> Gigs reported from User</h1>
 							</div>
 
+
+							
 							<div className='flex justify-center mt-2 pt-3 pr-1 pl-2'>
-
-							<button className='bg-blue-300 rounded-full px-5 text-2xl hover:bg-blue-400' onClick={payHost}>End Session</button>
+								<button className='bg-blue-300 rounded-full px-5 text-2xl hover:bg-blue-400' onClick={() => {payHost()}}>End Session</button>
 							</div>
 
-
-
 							
-
-
-							
-
-
-							<div className='flex justify-center'>
-								<button className='bg-blue-300 rounded-full px-5 text-2xl hover:bg-blue-400 mt-5' onClick={requestdata}>Request Data</button>
-
-							</div>
 
 							<div className='flex justify-center'>
 							</div>
