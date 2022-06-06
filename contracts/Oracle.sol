@@ -9,7 +9,7 @@ contract Oracle{
 
 
 	constructor(){
-		global = 2000000000;
+		global = 4000000000;
 	}
 
 	event DataRequested(

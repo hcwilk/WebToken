@@ -12,6 +12,7 @@ contract Web is ERC20, ReentrancyGuard{
 	uint public conversion;
 
 	OracleInterface public oracle_contract;
+	// StableInterface public stable_contract;
 
 	mapping(address => bool) is_host;
 
@@ -24,6 +25,7 @@ contract Web is ERC20, ReentrancyGuard{
 		_mint(address(this),supply * 10**9);
 		conversion = 2000000000;
 		oracle_contract = OracleInterface(_oracle);
+		// stable_contract = StableInterface(_stable);
 	}
 
 	modifier manager_function(){
@@ -77,6 +79,12 @@ contract Web is ERC20, ReentrancyGuard{
 		require(_bytes_C==_bytes_D,"CORE DOES NOT AGREE WITH DEVICE");
 		uint tokens_due = get_web((_bytes_C));
 		_transfer(msg.sender,_host,tokens_due);
+	}
+
+	function exchange(uint _stable) public {
+		// stable_contract.burn_stable(_stable);
+		uint web = (_stable * get_conversion())/(10**9);
+		_mint(msg.sender,web*10**4);
 	}
 
 

@@ -22,13 +22,23 @@ async function main() {
 
   console.log("Oracle deployed to:", oracle.address);
 
+
+
+
+  
+//   const Stable = await hre.ethers.getContractFactory("Stable");
+//   const stable = await Stable.deploy();
+
+//   await stable.deployed();
+
+//   console.log("Stable deployed to:", stable.address);
+
   const Web = await hre.ethers.getContractFactory("Web");
   const web = await Web.deploy(100, oracle.address);
 
   await web.deployed();
 
   console.log("Web deployed to:", web.address);
-
 
 
 
@@ -48,6 +58,6 @@ main()
     process.exit(1);
   });
 
-  //npx hardhat run --network PulseChain scripts/deploy.js 
+  // npx hardhat run --network PulseChain scripts/deploy.js 
   // npx hardhat run --network kovan scripts/deploy.js 
   //npx hardhat run --network localhost scripts/deploy.js
