@@ -2,29 +2,21 @@
 pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "./OracleInterface.sol";
 
 
 
 contract Web is ERC20, ReentrancyGuard{
 
 	address manager;
-	uint public conversion;
 
-	OracleInterface public oracle_contract;
 	// StableInterface public stable_contract;
 
 	mapping(address => bool) is_host;
 
 
-
-	
-
-	constructor(uint supply, address _oracle) ReentrancyGuard() ERC20("WebToken", "WEB") {
+	constructor(uint supply) ReentrancyGuard() ERC20("WebToken", "WEB") {
 		manager = msg.sender;
 		_mint(address(this),supply * 10**9);
-		conversion = 2000000000;
-		oracle_contract = OracleInterface(_oracle);
 		// stable_contract = StableInterface(_stable);
 	}
 
@@ -44,48 +36,17 @@ contract Web is ERC20, ReentrancyGuard{
         return 9;
     }
 
-	function buy_web() public payable{
-		require(msg.value>0,'you must send money in order to receive WEB');
-		_transfer(address(this),msg.sender,msg.value*get_conversion()/2);
-	}
 
 	function add_host(address _host) external manager_function{
 		is_host[_host]=true;
 	}
 
-	function set_conversion (uint _conversion) public{
-		oracle_contract.changeData(_conversion);
-	}
-
-	function get_conversion() public view returns(uint){
-		// This is going to be a Chainlink call in production
-		return oracle_contract.requestData();
-	}
-
-	// Needs to be pulled from a Chainlink Oracle
-	// Almost certain this means that we're going to need two contracts
-	function get_web (uint _bytes) public view returns(uint){
-
-		uint nanodollars = _bytes/2;
-
-		uint web = (nanodollars * get_conversion())/(10**9);
-
-		return web;
-	}
 
 	// What are we going to use to report this value to the contract?
 	// Once the user session ends, something (assuming that we write) needs to feel these values into this contract
-	function pay_host(uint _bytes_C, uint _bytes_D, address _host) external {
-		require(_bytes_C==_bytes_D,"CORE DOES NOT AGREE WITH DEVICE");
-		uint tokens_due = get_web((_bytes_C));
-		_transfer(msg.sender,_host,tokens_due);
+	function pay_host(uint _bytes_C, uint conversion) external nonReentrant(){
+		uint tokens_due = (_bytes_C * conversion)/(10**9);
+		_mint(msg.sender,tokens_due);
 	}
-
-	function exchange(uint _stable) public {
-		// stable_contract.burn_stable(_stable);
-		uint web = (_stable * get_conversion())/(10**9);
-		_mint(msg.sender,web*10**4);
-	}
-
 
 }
