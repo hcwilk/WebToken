@@ -31,8 +31,12 @@ module.exports = {
 	kovan:{
 		url:'https://kovan.infura.io/v3/d06042096f7a48b9949608c385bc8ba7',
 		accounts: [privateKey]
+	},
+	rink:{
+		url:'https://rinkeby.infura.io/v3/7fc3dd2a897d4441b5efd32fd756bb0e',
+		accounts: [privateKey]
+	},
 
-	}
   },
   solidity: "0.8.4",
 };

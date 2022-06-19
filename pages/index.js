@@ -5,10 +5,7 @@ import Web from '../artifacts/contracts/Web.sol/Web.json'
 import Oracle from '../artifacts/contracts/Oracle.sol/Oracle.json'
 import Stable from '../artifacts/contracts/Stable.sol/Stable.json'
 import {Contract, ethers} from 'ethers';
-import { oracle_address } from '../../oracle_config'
-import { stable_add, stable_abi } from '../stable.config'
 import axios from "axios";
-import ExitTable from './Components/exit_table'
 
 
 
@@ -18,6 +15,7 @@ import ExitTable from './Components/exit_table'
 
 export default function Home() {
 	const [userWeb, setUserWeb] = useState(0);
+	const [redeem, setRedeem] = useState(0);
 	const [user, setUser] = useState(1);
 	const [data, setData] = useState(0);
 	const [tower, setTower] = useState('a');
@@ -66,24 +64,18 @@ export default function Home() {
 		const provider = new ethers.providers.Web3Provider(connection);
 		const signer = provider.getSigner();
 		const WebContract = new ethers.Contract(web_address, Web.abi, signer );
-		const StableContract = new ethers.Contract(stable_add, Stable.abi, signer );
 
 		console.log('signer',signer.provider.provider.selectedAddress)
 
-		const data = await StableContract.balanceOf(signer.provider.provider.selectedAddress)
+	
 
-		console.log('balance shit',data)
-
-		setUserData(parseInt(data._hex)/100000)
-
-
+		const redeemable = await WebContract.getRedeemableWeb();
+		const redeemablee = parseInt(redeemable._hex)
+		setRedeem(redeemablee/1000000000)
 
 
-		// const some_data = await OracleContract.requestData(12)
 
-		// console.log(some_data)
-
-		console.log(WebContract) 
+		console.log('bruh',redeemablee) 
 
 		const balance = await WebContract.get_bal();
 		const balancee = parseInt(balance._hex)
@@ -101,12 +93,32 @@ export default function Home() {
 	}
 
 
-	function populateTable(){
-		axios.get('https://sheet.best/api/sheets/b4732bc1-b493-417e-9a28-60913dffe8a2')
-		.then((dataa) => {
-			setData(dataa.data)
-			console.log(dataa)
-		})
+	async function populateTable(){
+		const dataa = await axios.get('https://sheet.best/api/sheets/b4732bc1-b493-417e-9a28-60913dffe8a2')
+		let sum = 0
+		const yes = dataa.data
+		console.log(yes)
+		for(var i = 0; i<yes.length; i++){
+			sum = sum + parseFloat(yes[i].a)
+		}		
+		console.log('this is the sum',sum)
+
+		const web3Modal = new Web3Modal()
+		const connection = await web3Modal.connect()
+		const provider = new ethers.providers.Web3Provider(connection);
+		const signer = provider.getSigner();
+		const WebContract = new ethers.Contract(web_address, Web.abi, signer );
+
+		console.log('signer but like inside',signer.provider.provider.selectedAddress)
+
+		const tx = await WebContract.setRedeemableWeb(signer.provider.provider.selectedAddress,sum*10**9)
+
+		await tx.wait()
+
+		
+		
+		
+	
 	}
 
 	async function changeConversion(){
@@ -199,32 +211,20 @@ export default function Home() {
 	  }
 
 
-	  async function adddd(){
-	
-		try {
-		  // wasAdded is a boolean. Like any RPC method, an error may be thrown.
-		  const wasAdded = await ethereum.request({
-			method: 'wallet_watchAsset',
-			params: {
-			  type: 'ERC20', // Initially only supports ERC20, but eventually more!
-			  options: {
-				address: stable_add, // The address that the token is at.
-				symbol: 'RLY', // A ticker symbol or shorthand, up to 5 chars.
-				decimals: 5, // The number of decimals in the token
-			  },
-			},
-		  });
-	
-		  init()
+	  async function redeem_web(){
+
+		const web3Modal = new Web3Modal()
+		const connection = await web3Modal.connect()
+		const provider = new ethers.providers.Web3Provider(connection);
+		const signer = provider.getSigner();
+
+		const WebContract = new ethers.Contract(web_address, Web.abi, signer);
+
+		const tx = await WebContract.redeemWeb(redeem*10**9)
+
+		await tx.wait()
+
 		
-		  if (wasAdded) {
-			console.log('Thanks for your interest!');
-		  } else {
-			console.log('Your loss!');
-		  }
-		} catch (error) {
-		  console.log(error);
-		}
 	  }
 
 
@@ -303,16 +303,16 @@ export default function Home() {
 		setGigs_D(0)
 	}
 
-	function changeUser(_user){
-		setUser(_user)
-		setGigs_C(0)
-	}
+	// function changeUser(_user){
+	// 	setUser(_user)
+	// 	setGigs_C(0)
+	// }
 
 
-	function changeTower(_tower){
-		setTower(_tower)
-		setGigs_C(0)
-	}
+	// function changeTower(_tower){
+	// 	setTower(_tower)
+	// 	setGigs_C(0)
+	// }
 
 
 	
@@ -346,8 +346,8 @@ export default function Home() {
   		<div className='flex flex-col gap-20'>
 				<div className='flex justify-center'>
 					<h1 className='text-4xl underline font-semibold'>Really</h1> 
-					<h1 className='text-4xl font-semibold ml-8'>User {user}</h1> 
-					<h1 className='text-4xl font-semibold ml-8'>Tower {tower}</h1> 
+					{/* <h1 className='text-4xl font-semibold ml-8'>User {user}</h1> 
+					<h1 className='text-4xl font-semibold ml-8'>Tower {tower}</h1>  */}
 				</div>
 
 				<div className='flex justify-center'>
@@ -355,6 +355,10 @@ export default function Home() {
 				</div>
 
 				<div className='flex justify-center'>
+					<h1 className=' text-4xl text-center'>      Redeemable WEB =  {redeem}</h1>
+				</div>
+
+				{/* <div className='flex justify-center'>
 					<h1 className='text-3xl mx-16'> Data Used : {gigs_C}</h1>
 					<button className='bg-blue-300 rounded-full px-5 text-2xl hover:bg-blue-400' onClick={() => {changeUser(1)}}>User 1</button>
 					<button className='bg-blue-300 rounded-full px-5 text-2xl hover:bg-blue-400' onClick={() => {changeUser(2)}}>User 2</button>
@@ -384,11 +388,20 @@ export default function Home() {
 				<div className='flex justify-center mt-2 pt-3 pr-1 pl-2'>
 					<h1 className='text-2xl'>Total GIGS used by Tower {tower} : {totalData}</h1>
 				</div>
-				)}
+				)} */}
+
+		
 
 				<div className='flex justify-center mt-2 pt-3 pr-1 pl-2'>
-					<button className='bg-blue-300 rounded-full px-5 text-2xl hover:bg-blue-400' onClick={() => {payHost()}}>Pay Host</button>
-					<h1 className='text-2xl'></h1>
+					<button className='bg-red-300 rounded-full px-5 text-2xl hover:bg-red-400' onClick={() => {{populateTable()}}}>Set WEB</button>
+				</div>
+
+				<div className='flex justify-center mt-2 pt-3 pr-1 pl-2'>
+					<button className='bg-red-300 rounded-full px-5 text-2xl hover:bg-red-400' onClick={() => {{populateTable()}}}>Send WEB</button>
+				</div>
+
+				<div className='flex justify-center mt-2 pt-3 pr-1 pl-2'>
+					<button className='bg-blue-300 rounded-full px-5 text-2xl hover:bg-blue-400' onClick={() => {redeem_web()}}>Redeem WEB</button>
 				</div>
 		</div>
 	</>

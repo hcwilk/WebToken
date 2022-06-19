@@ -1,1 +1,1 @@
-export const web_address = '0x99E01b184f61CfC4798C4e5E10BD2A14D72b1703'
+export const web_address = '0x9E6F07bBD4beaCc3E61a8576C1d5d23Bad65f4eb'

@@ -60,4 +60,4 @@ main()
 
   // npx hardhat run --network PulseChain scripts/deploy.js 
   // npx hardhat run --network kovan scripts/deploy.js 
-  //npx hardhat run --network localhost scripts/deploy.js
+  // npx hardhat run --network rink scripts/deploy.js
